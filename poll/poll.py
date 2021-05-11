@@ -1,4 +1,5 @@
 import os
+from typing import List
 import psycopg2
 from psycopg2.errors import DivisionByZero
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ MENU_PROMPT = """-- Menu --
 2) List open polls
 3) Vote on a poll
 4) Show poll votes
-5) Select a random winner from a poll option
+5) Select a random winner from a poll options
 6) Exit
 
 Enter your choice: """
@@ -39,14 +40,14 @@ def prompt_vote_poll(connection):
     poll_id = int(input('Enter poll would you like to vote on: '))
 
     poll_options = database.get_poll_details(connection, poll_id)
-    _print_poll_options(poll_options)
+    print_poll_options(poll_options)
 
     option_id = int(input('Enter option you\'d like to vote for: '))
     username = input('Enter the username you\'d like to vote as: ')
     database.add_poll_vote(connection, username, option_id)
 
 
-def _print_poll_options(poll_with_options):
+def print_poll_options(poll_with_options: List[database.PollWithOption]):
     for option in poll_with_options:
         print(f'{option[3]}: {option[4]}')
 
@@ -66,7 +67,7 @@ def show_poll_votes(connection):
 def randomize_poll_winner(connection):
     poll_id = int(input('Enter poll you\'d like to pick a winner for: '))
     poll_options = database.get_poll_details(connection, poll_id)
-    _print_poll_options(poll_options)
+    print_poll_options(poll_options)
 
     option_id = int(input('Enter which is the winning option, we\'ll pick a random winner from voters: '))
     winner = database.get_random_poll_vote(connection, option_id)
